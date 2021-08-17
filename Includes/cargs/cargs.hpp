@@ -151,7 +151,8 @@ class Cargs
      *
      * @param command_name
      */
-    Cargs(const std::string& command_name) : _command_name(command_name)
+    Cargs(const std::string& command_name, size_t command_level = 0)
+        : _command_name(command_name), _command_level(command_level)
     {
         //! Do nothing
     }
@@ -176,7 +177,7 @@ class Cargs
     {
         //! Do nothing
         (void)command_name;
-        _sub_commands.push_back(new Cargs(command_name));
+        _sub_commands.push_back(new Cargs(command_name, _command_level + 1));
         return *this;
     }
 
