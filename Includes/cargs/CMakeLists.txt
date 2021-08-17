@@ -2,20 +2,15 @@
 set(target cargs)
 set(ROOT_DIR ${PROJECT_SOURCE_DIR})
 set(PUBLIC_HDR_DIR ${PROJECT_SOURCE_DIR}/Includes/cargs)
-set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Set public headers
 set(PUBLIC_HDRS
     ${PUBLIC_HDR_DIR}/cargs.hpp
 )
 
-# Set Sources
-set(SRCS
-    ${SRC_DIR}/cargs.cpp
-)
-
 # Build library
-add_library(${target} ${SRCS})
+add_library(${target} INTERFACE)
+add_library(${target}::${target} ALIAS ${target})
 
 # Project options
 set_target_properties(${target}
@@ -26,29 +21,27 @@ set_target_properties(${target}
 
 #Include directories
 target_include_directories(${target}
-    PUBLIC
+    INTERFACE
     $<BUILD_INTERFACE:${PUBLIC_HDR_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
-    PRIVATE
-    ${PUBLIC_HDR_DIR}
 )
 
 # Compile options
 target_compile_options(${target}
-    PRIVATE
+    INTERFACE
     ${DEFAULT_COMPILE_OPTIONS}
 )
 
 # Link libraries
 target_link_libraries(${target}
-    PUBLIC
+    INTERFACE
     ${DEFAULT_LINKER_OPTIONS}
 	${DEFAULT_LIBRARIES}
 )
 
 # Compile definitions
 target_compile_definitions(${target}
-    PRIVATE
+    INTERFACE
     ${DEFAULT_COMPILE_DEFINITIONS}
 )
 
