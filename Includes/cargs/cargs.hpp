@@ -70,10 +70,11 @@ class Flag
      * @param description
      */
     Flag(char short_hint, const std::string& long_hint,
-         const std::string& description)
+         const std::string& description, Value value)
         : _short_hint(short_hint),
           _long_hint(long_hint),
-          _description(description)
+          _description(description),
+          _value(value)
     {
         //! Do nothing
     }
@@ -119,6 +120,7 @@ class Flag
     char _short_hint{ 0 };
     std::string _long_hint;
     std::string _description;
+    Value _value;
 };
 
 class Result
@@ -228,11 +230,7 @@ class Cargs
                                      const std::string& description,
                                      Value value)
     {
-        //! Do nothing
-        (void)short_hint;
-        (void)long_hint;
-        (void)description;
-        (void)value;
+        _flags.emplace_back(short_hint, long_hint, description, value);
         return *this;
     }
 
