@@ -9,6 +9,25 @@
 
 namespace cargs
 {
+class Utils
+{
+ public:
+    /**
+     * @brief
+     *
+     * @param s1
+     * @param s2
+     * @return size_t
+     */
+    static size_t levenshtein_distance(const std::string_view& s1,
+                                       const std::string_view& s2)
+    {
+        (void)s1;
+        (void)s2;
+        return 0;
+    }
+};
+
 class Value
 {
  public:
@@ -44,6 +63,21 @@ class Flag
         //! Do nothing
     }
     /**
+     * @brief Construct a new Flag object
+     *
+     * @param short_hint
+     * @param long_hint
+     * @param description
+     */
+    Flag(char short_hint, const std::string& long_hint,
+         const std::string& description)
+        : _short_hint(short_hint),
+          _long_hint(long_hint),
+          _description(description)
+    {
+        //! Do nothing
+    }
+    /**
      * @brief Destroy the cargs flag object
      *
      */
@@ -51,7 +85,6 @@ class Flag
     {
         //! Do nothing
     }
-
     /**
      * @brief Get the short hint object
      *
@@ -83,7 +116,7 @@ class Flag
     }
 
  private:
-    char _short_hint;
+    char _short_hint{ 0 };
     std::string _long_hint;
     std::string _description;
 };
@@ -241,38 +274,36 @@ class Cargs
      * @param long_hint
      * @return std::vector<Flag>
      */
-    Flag get_similar_flag(const std::string& long_hint, double epsilon = 1e-6)
+    Flag get_similar_flag(const std::string& long_hint,
+                          double similar_percentage = 5e-1)
     {
-        //! Do nothing
-        (void)long_hint;
-        (void)epsilon;
-        return Flag();
+        size_t min_distance = std::numeric_limits<size_t>::max();
+        const size_t i_epsilon =
+            static_cast<size_t>(long_hint.size() * similar_percentage);
+        const Flag* candidate_ptr = nullptr;
+
+        for (const auto& flag : _flags)
+        {
+            size_t distance =
+                Utils::levenshtein_distance(long_hint, flag.get_long_hint());
+            if (distance > i_epsilon && min_distance > distance)
+            {
+                min_distance = distance;
+                candidate_ptr = &flag;
+            }
+        }
+
+        return min_distance == std::numeric_limits<size_t>::max()
+                   ? (*candidate_ptr)
+                   : Flag();
     }
 
  protected:
  private:
-    std::vector<Cargs*> _sub_commands;
     std::string _command_name;
+    std::vector<Cargs*> _sub_commands;
+    std::vector<Flag> _flags;
     size_t _command_level{ 0 };
-};
-
-class Utils
-{
- public:
-    /**
-     * @brief
-     *
-     * @param s1
-     * @param s2
-     * @return size_t
-     */
-    static size_t levenshtein_distance(const std::string_view& s1,
-                                       const std::string_view& s2)
-    {
-        (void)s1;
-        (void)s2;
-        return 0;
-    }
 };
 
 }  // namespace cargs
